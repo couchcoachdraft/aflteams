@@ -107,6 +107,7 @@ button:hover { border-color: var(--accent); }
   padding: 0;
   margin: 0;
   max-height: 720px;
+  min-height: 220px;
   overflow: auto;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -122,4 +123,5 @@ button:hover { border-color: var(--accent); }
 .poolItem:hover { background: #1a2030; }
 
 .dropHint { outline: 2px dashed var(--accent); outline-offset: 2px; }
+
 
