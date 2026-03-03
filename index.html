@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AFL Fantasy Builder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="title">AFL Fantasy Builder</div>
+
+    <div class="toolbar">
+      <label>Magic #:
+        <input id="magicNumber" type="number" step="1" />
+      </label>
+
+      <button id="btnExport">Export Save (.json)</button>
+      <input id="fileImport" type="file" accept="application/json" style="display:none" />
+      <button id="btnImport">Import Save</button>
+
+      <button id="btnClearLocal">Clear Browser Autosave</button>
+      <span class="muted">Autosaves to this browser + you can export/import a file.</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <div id="tabs" class="tabs"></div>
+
+    <section class="content">
+      <div class="teamHeader">
+        <div class="teamTitle" id="teamTitle">—</div>
+
+        <label>Top:
+          <input id="topInput" type="number" step="1" />
+        </label>
+
+        <div id="totalLabel">Total: 0 / 0</div>
+        <div id="remainingLabel">Remaining: —</div>
+      </div>
+
+      <div class="layout">
+        <div id="leftCol" class="col"></div>
+        <div id="rightCol" class="col"></div>
+
+        <div class="sidePools">
+          <div class="pool">
+            <div class="poolTitle">Roster (names only)</div>
+            <ul id="rosterPool" class="poolList" data-pool="roster"></ul>
+          </div>
+
+          <div class="pool">
+            <div class="poolTitle">Injured (names only)</div>
+            <ul id="injuredPool" class="poolList" data-pool="injured"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
