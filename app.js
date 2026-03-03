@@ -19,10 +19,10 @@ const GROUPS_LEFT = [
   ["HB", ["HB1","HB2"]],
   ["R", ["R"]],
   ["W", ["W1","W2"]],
+	["HF", ["HF1","HF2"]],
 ];
 
 const GROUPS_RIGHT = [
-  ["HF", ["HF1","HF2"]],
   ["Back", ["FB","CB","SB","UB"]],
   ["Forward", ["FF","CF","SF","UF"]],
   ["Bench", ["BB","BM","BW","BF","BU"]],
@@ -655,3 +655,4 @@ async function init() {
 }
 
 init();
+
