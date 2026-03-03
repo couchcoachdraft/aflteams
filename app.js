@@ -632,11 +632,11 @@ async function init() {
 
   // load DB
   try {
-    await loadDb();
-  } catch (e) {
-    alert(String(e));
-    return;
-  }
+  await loadDb();
+} catch (e) {
+  document.body.innerHTML = `<pre style="color:white;background:#111;padding:16px;">DB load failed:\n${String(e)}\n\nCheck:\n- run via http:// not file://\n- aflplayers.json path/name\n- valid JSON</pre>`;
+  throw e;
+}
 
   // load autosave if present
   loadAutosaveIfAny();
