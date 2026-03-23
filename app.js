@@ -5,7 +5,7 @@ const DB_FILENAME = "aflplayers.json";
 const SAVE_LOCAL_KEY = "afl-fantasy-builder-save-v1";
 
 // editable in UI
-let MAGIC_NUMBER = 10490;
+let MAGIC_NUMBER = 9890;
 
 // hardcoded team map
 const SQUAD_ID_TO_TEAM = {
