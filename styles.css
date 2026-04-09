@@ -124,5 +124,9 @@ button:hover { border-color: var(--accent); }
 
 .dropHint { outline: 2px dashed var(--accent); outline-offset: 2px; }
 
-
+.playingOutline {
+  outline: 3px solid #2ecc71;   /* green */
+  outline-offset: 1px;
+  font-weight: 700;
+}
 
