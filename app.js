@@ -122,6 +122,7 @@ async function loadDb() {
       position: posString(p.position),
       games: p.gamesPlayed ?? "",
       average: p.averagePoints ?? "",
+	  status: p.status ?? "",
       raw: p,
     };
     playerDb[pid] = rec;
