@@ -266,6 +266,9 @@ function renderMainRow(slotKey) {
     (e) => handleDropToMain(slotKey, e),
     (e) => handleDragStartFromAssigned("main", slotKey, e)
   );
+	if (p && String(p.status).toLowerCase() === "playing") {
+  	dropInp.classList.add("playingOutline");
+}
   row.push(dropInp);
 
   row.push(makeText(p ? p.price : "", true));
