@@ -313,6 +313,9 @@ function renderSecondary(title, kind, items, count) {
       (e) => handleDropToSecondary(kind, i, e),
       (e) => handleDragStartFromAssigned(kind, i, e)
     );
+	  if (p && String(p.status).toLowerCase() === "playing") {
+  dropInp.classList.add("playingOutline");
+}
     grid.appendChild(dropInp);
 
     grid.appendChild(makeText(p ? p.price : "", true));
