@@ -364,10 +364,6 @@ valInp.oninput = () => {
 row.push(valInp);
 row.push(pctInp);
 
-  // %Top
-  const pct = computePctOfTop(t.main[slotKey].value);
-  row.push(makeText(pct, true));
-
   return row;
 }
 
