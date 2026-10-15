@@ -90,7 +90,35 @@ function buildEmptyTeamState(rosterIds) {
     rookies: Array.from({length: ROOKIES_COUNT}, () => ({ playerId: null })),
   };
 }
+function fillValuesFromPriceAt() {
+  const t = teamState[currentTeam];
+  for (const slotKey of Object.keys(t.main)) {
+    const pid = t.main[slotKey].playerId;
+    if (pid == null) continue;
 
+    const p = playerDb[pid];
+    const pa = Number(priceAt(p.price));   // priceAt returns a string like "79.5"
+    if (Number.isFinite(pa)) t.main[slotKey].value = pa;
+  }
+  autosave();
+  recalcTotals();
+  renderMain();
+}
+
+function fillValuesFromAverage() {
+  const t = teamState[currentTeam];
+  for (const slotKey of Object.keys(t.main)) {
+    const pid = t.main[slotKey].playerId;
+    if (pid == null) continue;
+
+    const p = playerDb[pid];
+    const ave = Number(p.average);
+    if (Number.isFinite(ave)) t.main[slotKey].value = ave;
+  }
+  autosave();
+  recalcTotals();
+  renderMain();
+}
 // =========================
 // LOAD DB
 // =========================
@@ -650,7 +678,8 @@ async function init() {
     if (file) importSaveFromFile(file);
     e.target.value = "";
   };
-
+  el("btnFillPriceAt").onclick = fillValuesFromPriceAt;
+  el("btnFillAve").onclick = fillValuesFromAverage;
   el("btnClearLocal").onclick = clearAutosave;
 
   // load DB
