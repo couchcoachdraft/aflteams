@@ -334,38 +334,6 @@ function renderMainRow(slotKey) {
 
   return row;
 }
-// Value input (editable)
-const valInp = document.createElement("input");
-valInp.className = "cellInput";
-valInp.type = "text";
-valInp.inputMode = "numeric";     // mobile keypad
-valInp.placeholder = "0";
-valInp.value = String(t.main[slotKey].value ?? 0);
-
-// %Top (readonly cell) - we will update it on each keystroke
-const pctInp = makeText(computePctOfTop(t.main[slotKey].value), true);
-
-valInp.oninput = () => {
-  // allow blank while typing
-  const raw = valInp.value.trim();
-  const num = raw === "" ? 0 : Number(raw);
-
-  // if user types something non-numeric, don't crash; just ignore update
-  if (raw !== "" && !Number.isFinite(num)) return;
-
-  t.main[slotKey].value = num;
-  pctInp.value = computePctOfTop(num);
-
-  autosave();
-  recalcTotals();
-};
-
-// push into row in the right order
-row.push(valInp);
-row.push(pctInp);
-
-  return row;
-}
 
 function renderSecondary(title, kind, items, count) {
   const { box, grid } = makeBox(title, "small");
