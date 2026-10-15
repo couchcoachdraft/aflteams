@@ -277,18 +277,35 @@ function renderMainRow(slotKey) {
   row.push(makeText(p ? p.games : "", true));
   row.push(makeText(p ? p.average : "", true));
 
-  // Value input (editable)
-  const valInp = document.createElement("input");
-  valInp.className = "cellInput";
-  valInp.type = "number";
-  valInp.value = t.main[slotKey].value ?? 0;
-  valInp.oninput = () => {
-    t.main[slotKey].value = Number(valInp.value || 0);
-    autosave();
-    recalcTotals();
-    renderMain(); // refresh %Top + total
-  };
-  row.push(valInp);
+// Value input (editable)
+const valInp = document.createElement("input");
+valInp.className = "cellInput";
+valInp.type = "text";
+valInp.inputMode = "numeric";     // mobile keypad
+valInp.placeholder = "0";
+valInp.value = String(t.main[slotKey].value ?? 0);
+
+// %Top (readonly cell) - we will update it on each keystroke
+const pctInp = makeText(computePctOfTop(t.main[slotKey].value), true);
+
+valInp.oninput = () => {
+  // allow blank while typing
+  const raw = valInp.value.trim();
+  const num = raw === "" ? 0 : Number(raw);
+
+  // if user types something non-numeric, don't crash; just ignore update
+  if (raw !== "" && !Number.isFinite(num)) return;
+
+  t.main[slotKey].value = num;
+  pctInp.value = computePctOfTop(num);
+
+  autosave();
+  recalcTotals();
+};
+
+// push into row in the right order
+row.push(valInp);
+row.push(pctInp);
 
   // %Top
   const pct = computePctOfTop(t.main[slotKey].value);
