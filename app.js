@@ -286,10 +286,8 @@ function renderMainRow(slotKey) {
   const assigned = t.main[slotKey].playerId;
   const p = assigned != null ? playerDb[assigned] : null;
 
-  // 1) Slot
   row.push(makeText(slotKey, true));
 
-  // 2) Player (drop)
   const dropInp = makeDropInput(
     p ? displayName(p) : "",
     (e) => handleDropToMain(slotKey, e),
@@ -300,21 +298,18 @@ function renderMainRow(slotKey) {
   }
   row.push(dropInp);
 
-  // 3-7) Stats
   row.push(makeText(p ? p.price : "", true));
   row.push(makeText(p ? priceAt(p.price) : "", true));
   row.push(makeText(p ? p.position : "", true));
   row.push(makeText(p ? p.games : "", true));
   row.push(makeText(p ? p.average : "", true));
 
-  // 8) Value (free text, no re-render)
   const valInp = document.createElement("input");
   valInp.className = "cellInput";
   valInp.type = "text";
   valInp.inputMode = "numeric";
   valInp.value = String(t.main[slotKey].value ?? 0);
 
-  // 9) %Top cell (single one)
   const pctInp = makeText(computePctOfTop(t.main[slotKey].value), true);
 
   valInp.oninput = () => {
@@ -344,16 +339,16 @@ function renderSecondary(title, kind, items, count) {
     const pid = item.playerId;
     const p = pid != null ? playerDb[pid] : null;
 
-    grid.appendChild(makeText(String(i+1), true));
+    grid.appendChild(makeText(String(i + 1), true));
 
     const dropInp = makeDropInput(
       p ? displayName(p) : "",
       (e) => handleDropToSecondary(kind, i, e),
       (e) => handleDragStartFromAssigned(kind, i, e)
     );
-	  if (p && String(p.status).toLowerCase() === "playing") {
+    if (p && String(p.status).toLowerCase() === "playing") {
       dropInp.classList.add("playingOutline");
-}
+    }
     grid.appendChild(dropInp);
 
     grid.appendChild(makeText(p ? p.price : "", true));
