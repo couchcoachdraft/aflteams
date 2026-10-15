@@ -283,28 +283,57 @@ function renderMainRow(slotKey) {
   const t = teamState[currentTeam];
   const row = [];
 
-  // Slot label
-  row.push(makeText(slotKey, true));
-
   const assigned = t.main[slotKey].playerId;
   const p = assigned != null ? playerDb[assigned] : null;
 
+  // 1) Slot
+  row.push(makeText(slotKey, true));
+
+  // 2) Player (drop)
   const dropInp = makeDropInput(
     p ? displayName(p) : "",
     (e) => handleDropToMain(slotKey, e),
     (e) => handleDragStartFromAssigned("main", slotKey, e)
   );
-	if (p && String(p.status).toLowerCase() === "playing") {
-  	dropInp.classList.add("playingOutline");
-}
+  if (p && String(p.status).toLowerCase() === "playing") {
+    dropInp.classList.add("playingOutline");
+  }
   row.push(dropInp);
 
+  // 3-7) Stats
   row.push(makeText(p ? p.price : "", true));
   row.push(makeText(p ? priceAt(p.price) : "", true));
   row.push(makeText(p ? p.position : "", true));
   row.push(makeText(p ? p.games : "", true));
   row.push(makeText(p ? p.average : "", true));
 
+  // 8) Value (free text, no re-render)
+  const valInp = document.createElement("input");
+  valInp.className = "cellInput";
+  valInp.type = "text";
+  valInp.inputMode = "numeric";
+  valInp.value = String(t.main[slotKey].value ?? 0);
+
+  // 9) %Top cell (single one)
+  const pctInp = makeText(computePctOfTop(t.main[slotKey].value), true);
+
+  valInp.oninput = () => {
+    const raw = valInp.value.trim();
+    const num = raw === "" ? 0 : Number(raw);
+    if (raw !== "" && !Number.isFinite(num)) return;
+
+    t.main[slotKey].value = num;
+    pctInp.value = computePctOfTop(num);
+
+    autosave();
+    recalcTotals();
+  };
+
+  row.push(valInp);
+  row.push(pctInp);
+
+  return row;
+}
 // Value input (editable)
 const valInp = document.createElement("input");
 valInp.className = "cellInput";
