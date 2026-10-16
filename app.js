@@ -31,7 +31,7 @@ const GROUPS_RIGHT = [
 const RESERVES_COUNT = 15;
 const ROOKIES_COUNT = 15;
 
-const RATINGS_CSV_FILENAME = "ratings_last20.csv";
+const RATINGS_CSV_FILENAME = "playerstats.csv";
 
 const FULL_TEAM_TO_ABBR = {
   "Adelaide": "ADE",
