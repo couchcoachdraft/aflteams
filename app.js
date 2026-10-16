@@ -766,22 +766,24 @@ async function init() {
   el("btnClearLocal").onclick = clearAutosave;
 
   // load DB
-  try {
+try {
   await loadDb();
-} 
+
+  // Load ratings CSV hosted in the repo (optional)
   try {
-  const res = await fetch(RATINGS_CSV_FILENAME);
-  if (res.ok) {
-    const text = await res.text();
-    const rows = parseCsvSimple(text);
-    mergeRatingsRows(rows);
-  } else {
-    console.warn("Ratings CSV not found:", RATINGS_CSV_FILENAME, res.status);
+    const res = await fetch(RATINGS_CSV_FILENAME);
+    if (res.ok) {
+      const text = await res.text();
+      const rows = parseCsvSimple(text);
+      mergeRatingsRows(rows);
+    } else {
+      console.warn("Ratings CSV not found:", RATINGS_CSV_FILENAME, res.status);
+    }
+  } catch (e) {
+    console.warn("Ratings CSV load failed:", e);
   }
+
 } catch (e) {
-  console.warn("Ratings CSV load failed:", e);
-}
-  catch (e) {
   document.body.innerHTML = `<pre style="color:white;background:#111;padding:16px;">DB load failed:\n${String(e)}\n\nCheck:\n- run via http:// not file://\n- aflplayers.json path/name\n- valid JSON</pre>`;
   throw e;
 }
