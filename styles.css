@@ -76,7 +76,7 @@ button:hover { border-color: var(--accent); }
 
 .grid {
   display: grid;
-  grid-template-columns: 60px 180px 80px 80px 90px 70px 70px 80px 70px;
+  grid-template-columns: 60px 180px 80px 80px 90px 70px 70px 70px 80px 70px;
   gap: 6px 8px;
   align-items: center;
 }
