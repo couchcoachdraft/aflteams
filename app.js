@@ -214,10 +214,28 @@ function mergeRatingsRows(rows) {
 // LOAD DB
 // =========================
 async function loadDb() {
-  const res = await fetch(DB_FILENAME);
-  if (!res.ok) throw new Error(`Failed to fetch ${DB_FILENAME}: ${res.status}`);
-  const players = await res.json();
-  if (!Array.isArray(players)) throw new Error(`${DB_FILENAME} must be a JSON array of players`);
+  const res = await fetch(DB_FILENAME, { cache: "no-store" });
+
+  const text = await res.text(); // read as text first so we can show debug
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch ${DB_FILENAME}: ${res.status} ${res.statusText}\n\nFirst 200 chars:\n${text.slice(0, 200)}`
+    );
+  }
+
+  let players;
+  try {
+    players = JSON.parse(text);
+  } catch (e) {
+    throw new Error(
+      `Invalid JSON in ${DB_FILENAME}: ${e}\n\nFirst 200 chars:\n${text.slice(0, 200)}`
+    );
+  }
+
+  if (!Array.isArray(players)) {
+    throw new Error(`${DB_FILENAME} must be a JSON array of players (it was ${typeof players}).`);
+  }
 
   playerDb = {};
   teams = {};
@@ -229,6 +247,7 @@ async function loadDb() {
     if (!Number.isFinite(pid) || !Number.isFinite(squadId)) continue;
 
     const team = SQUAD_ID_TO_TEAM[squadId] || String(squadId);
+
     const rec = {
       id: pid,
       squadId,
@@ -237,18 +256,23 @@ async function loadDb() {
       lastName: p.lastName,
       displayName: `${p.firstName || ""} ${p.lastName || ""}`.trim(),
       price: p.price ?? "",
-      priceAt: "", // computed later (depends on MAGIC_NUMBER)
       position: posString(p.position),
       games: p.gamesPlayed ?? "",
       average: p.averagePoints ?? "",
-	  status: p.status ?? "",
+      status: p.status ?? "",
       rating20: null,
-	  raw: p,
+      raw: p,
     };
+
     playerDb[pid] = rec;
     if (!teams[team]) teams[team] = [];
     teams[team].push(pid);
   }
+
+  for (const t of Object.keys(teams)) {
+    teams[t].sort((a, b) => displayName(playerDb[a]).localeCompare(displayName(playerDb[b])));
+  }
+}
 
   // sort rosters
   for (const t of Object.keys(teams)) {
