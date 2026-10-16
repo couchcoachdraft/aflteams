@@ -396,6 +396,7 @@ function renderMainRow(slotKey) {
   row.push(makeText(p ? p.position : "", true));
   row.push(makeText(p ? p.games : "", true));
   row.push(makeText(p ? p.average : "", true));
+  row.push(makeText(p && p.rating20 != null ? Number(p.rating20).toFixed(3) : "", true));
 
   const valInp = document.createElement("input");
   valInp.className = "cellInput";
