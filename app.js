@@ -272,14 +272,9 @@ async function loadDb() {
   for (const t of Object.keys(teams)) {
     teams[t].sort((a, b) => displayName(playerDb[a]).localeCompare(displayName(playerDb[b])));
   }
-}
 
-  // sort rosters
-  for (const t of Object.keys(teams)) {
-    teams[t].sort((a, b) => displayName(playerDb[a]).localeCompare(displayName(playerDb[b])));
-  }
+  buildPlayerKeyToIdIndex();
 }
-buildPlayerKeyToIdIndex();
 
 // =========================
 // RENDER
