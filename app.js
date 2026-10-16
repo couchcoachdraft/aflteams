@@ -31,6 +31,36 @@ const GROUPS_RIGHT = [
 const RESERVES_COUNT = 15;
 const ROOKIES_COUNT = 15;
 
+const RATINGS_CSV_FILENAME = "ratings_last20.csv";
+
+const FULL_TEAM_TO_ABBR = {
+  "Adelaide": "ADE",
+  "Adelaide Crows": "ADE",
+  "Brisbane": "BRL",
+  "Brisbane Lions": "BRL",
+  "Carlton": "CAR",
+  "Collingwood": "COL",
+  "Essendon": "ESS",
+  "Fremantle": "FRE",
+  "Geelong": "GEE",
+  "Geelong Cats": "GEE",
+  "Gold Coast": "GCS",
+  "Gold Coast SUNS": "GCS",
+  "Greater Western Sydney": "GWS",
+  "GWS GIANTS": "GWS",
+  "Hawthorn": "HAW",
+  "Melbourne": "MEL",
+  "North Melbourne": "NTH",
+  "Port Adelaide": "PTA",
+  "Richmond": "RIC",
+  "St Kilda": "STK",
+  "Sydney": "SYD",
+  "Sydney Swans": "SYD",
+  "West Coast": "WCE",
+  "West Coast Eagles": "WCE",
+  "Western Bulldogs": "WBD",
+};
+
 // =========================
 // STATE
 // =========================
@@ -119,6 +149,67 @@ function fillValuesFromAverage() {
   recalcTotals();
   renderMain();
 }
+
+function parseCsvSimple(text) {
+  // Works when fields do NOT contain commas inside quotes.
+  // If your CSV has quoted commas, tell me and I’ll switch you to PapaParse.
+  const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+  const header = lines[0].split(",").map(h => h.trim());
+  const rows = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(",");
+    const obj = {};
+    for (let c = 0; c < header.length; c++) obj[header[c]] = (cols[c] ?? "").trim();
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function normalizeFullTeamToAbbr(fullTeam) {
+  const t = String(fullTeam || "").trim();
+  return (FULL_TEAM_TO_ABBR[t] || t).toUpperCase();
+}
+
+function buildPlayerKeyToIdIndex() {
+  // name|TEAM -> playerId
+  window.__playerKeyToId = {};
+  for (const pidStr of Object.keys(playerDb)) {
+    const p = playerDb[pidStr];
+    const key = `${String(p.displayName).trim().toLowerCase()}|${String(p.team).trim().toUpperCase()}`;
+    window.__playerKeyToId[key] = Number(pidStr);
+  }
+}
+
+function mergeRatingsRows(rows) {
+  let matched = 0;
+  let unmatched = 0;
+
+  for (const r of rows) {
+    const name = String(r["Player"] || "").trim();
+    const teamFull = String(r["Team"] || "").trim();
+    if (!name || !teamFull) continue;
+
+    const teamAbbr = normalizeFullTeamToAbbr(teamFull);
+    const key = `${name.toLowerCase()}|${teamAbbr}`;
+    const pid = window.__playerKeyToId?.[key];
+
+    if (!pid) {
+      unmatched++;
+      continue;
+    }
+
+    // Your "last 20 rating" (based on your sample column)
+    const rating20 = Number(r["RatingPoints_Avg"]);
+    if (Number.isFinite(rating20)) {
+      playerDb[pid].rating20 = rating20;
+      matched++;
+    }
+  }
+
+  console.log(`Ratings merged. matched=${matched}, unmatched=${unmatched}`);
+}
+
 // =========================
 // LOAD DB
 // =========================
@@ -151,7 +242,8 @@ async function loadDb() {
       games: p.gamesPlayed ?? "",
       average: p.averagePoints ?? "",
 	  status: p.status ?? "",
-      raw: p,
+      rating20: null,
+	  raw: p,
     };
     playerDb[pid] = rec;
     if (!teams[team]) teams[team] = [];
@@ -163,6 +255,7 @@ async function loadDb() {
     teams[t].sort((a, b) => displayName(playerDb[a]).localeCompare(displayName(playerDb[b])));
   }
 }
+buildPlayerKeyToIdIndex();
 
 // =========================
 // RENDER
@@ -256,7 +349,7 @@ function renderMain() {
   // LEFT groups
   GROUPS_LEFT.forEach(([gname, slots]) => {
     const { box, grid } = makeBox(gname);
-    addHdr(grid, ["Slot","Player","Price","PriceAT","Pos","Games","Ave","Value","%Top"]);
+    addHdr(grid, ["Slot","Player","Price","PriceAT","Pos","Games","Ave","R20","Value","%Top"]);
 
     slots.forEach(slotKey => grid.append(...renderMainRow(slotKey)));
     leftCol.appendChild(box);
@@ -268,7 +361,7 @@ function renderMain() {
   // RIGHT groups
   GROUPS_RIGHT.forEach(([gname, slots]) => {
     const { box, grid } = makeBox(gname);
-    addHdr(grid, ["Slot","Player","Price","PriceAT","Pos","Games","Ave","Value","%Top"]);
+    addHdr(grid, ["Slot","Player","Price","PriceAT","Pos","Games","Ave","R20","Value","%Top"]);
     slots.forEach(slotKey => grid.append(...renderMainRow(slotKey)));
     rightCol.appendChild(box);
   });
@@ -674,7 +767,20 @@ async function init() {
   // load DB
   try {
   await loadDb();
+} 
+  try {
+  const res = await fetch(RATINGS_CSV_FILENAME);
+  if (res.ok) {
+    const text = await res.text();
+    const rows = parseCsvSimple(text);
+    mergeRatingsRows(rows);
+  } else {
+    console.warn("Ratings CSV not found:", RATINGS_CSV_FILENAME, res.status);
+  }
 } catch (e) {
+  console.warn("Ratings CSV load failed:", e);
+}
+  catch (e) {
   document.body.innerHTML = `<pre style="color:white;background:#111;padding:16px;">DB load failed:\n${String(e)}\n\nCheck:\n- run via http:// not file://\n- aflplayers.json path/name\n- valid JSON</pre>`;
   throw e;
 }
