@@ -28,8 +28,8 @@ const GROUPS_RIGHT = [
   ["Bench", ["BB","BM","BW","BF","BU"]],
 ];
 
-const RESERVES_COUNT = 15;
-const ROOKIES_COUNT = 15;
+const RESERVES_COUNT = 20;
+const ROOKIES_COUNT = 20;
 
 const RATINGS_CSV_FILENAME = "playerstats.csv";
 
@@ -375,7 +375,7 @@ function renderMain() {
   });
 
   // Reserves embedded under left
-  leftCol.appendChild(renderSecondary("Reserves (15)", "reserves", teamState[currentTeam].reserves, RESERVES_COUNT));
+  leftCol.appendChild(renderSecondary("Reserves", "reserves", teamState[currentTeam].reserves, RESERVES_COUNT));
 
   // RIGHT groups
   GROUPS_RIGHT.forEach(([gname, slots]) => {
@@ -445,7 +445,7 @@ function renderMainRow(slotKey) {
 
 function renderSecondary(title, kind, items, count) {
   const { box, grid } = makeBox(title, "small");
-  addHdr(grid, ["#","Player","Price","PriceAT","Pos","Games","Ave"]);
+  addHdr(grid, ["#","Player","Price","PriceAT","Pos","Games","Ave","R20"]);
 
   for (let i = 0; i < count; i++) {
     const item = items[i] || { playerId: null };
@@ -453,6 +453,7 @@ function renderSecondary(title, kind, items, count) {
     const p = pid != null ? playerDb[pid] : null;
 
     grid.appendChild(makeText(String(i + 1), true));
+	grid.appendChild(makeText(p && p.rating20 != null ? Number(p.rating20).toFixed(3) : "", true));
 
     const dropInp = makeDropInput(
       p ? displayName(p) : "",
