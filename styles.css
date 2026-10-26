@@ -81,7 +81,7 @@ button:hover { border-color: var(--accent); }
   align-items: center;
 }
 .grid.small {
-  grid-template-columns: 40px 200px 80px 80px 90px 70px 70px;
+  grid-template-columns: 40px 200px 80px 80px 90px 70px 70px 70px;
 }
 
 .hdr { color: var(--muted); font-size: 12px; }
