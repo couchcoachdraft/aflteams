@@ -386,7 +386,7 @@ function renderMain() {
   });
 
   // Rookies embedded under right
-  rightCol.appendChild(renderSecondary("Rookies (15)", "rookies", teamState[currentTeam].rookies, ROOKIES_COUNT));
+  rightCol.appendChild(renderSecondary("Rookies", "rookies", teamState[currentTeam].rookies, ROOKIES_COUNT));
 
   renderPools();
 }
