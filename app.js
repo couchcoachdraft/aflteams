@@ -453,7 +453,7 @@ function renderSecondary(title, kind, items, count) {
     const p = pid != null ? playerDb[pid] : null;
 
     grid.appendChild(makeText(String(i + 1), true));
-	grid.appendChild(makeText(p && p.rating20 != null ? Number(p.rating20).toFixed(3) : "", true));
+	
 
     const dropInp = makeDropInput(
       p ? displayName(p) : "",
@@ -471,6 +471,7 @@ function renderSecondary(title, kind, items, count) {
     grid.appendChild(makeText(p ? p.position : "", true));
     grid.appendChild(makeText(p ? p.games : "", true));
     grid.appendChild(makeText(p ? p.average : "", true));
+	grid.appendChild(makeText(p && p.rating20 != null ? Number(p.rating20).toFixed(3) : "", true));
   }
 
   return box;
